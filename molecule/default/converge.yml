@@ -1,0 +1,38 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: install updates
+      command: apt update -y
+  
+    - name: install git
+      apt:
+      name: git
+      state: present
+      update_cache: yes
+
+    - name: clone repo
+      ansible.builtin.git:
+        repo: https://github.com/johnbedeir/laravel-app.git
+        dest: /root/laravel-apt   
+    
+    - name: add text to .bashrc file
+      blockinfile:
+        path: /root/.bashrc
+        block: |
+          export PYENV_ROOT="/root/.pyenv" 
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
+          eval "$(pyenv init -)"
+          
+    - name: create sh script
+      file:
+        path: /root/script.sh
+        state: touch
+
+    - name: insert text into script
+      lineinfile:
+        path: /root/script.sh
+        line: "pip install --upgrade pip"
+
+   
